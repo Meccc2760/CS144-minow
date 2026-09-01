@@ -3,3 +3,5 @@
 /.vscode
 *.swp
 /.cache
+.DS_Store
+cs144-fall-2025-arm64.utm
