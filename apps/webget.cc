@@ -14,19 +14,18 @@ void get_URL( const string& host, const string& path )
   TCPSocket tcpsocket;
   Address address(host, "http");
   tcpsocket.connect(address);
-  
+
   std::string request = 
     "GET " + path + " HTTP/1.1\r\n" +
     "Host: " + host + "\r\n" +
     "Connection: close\r\n" +
     "\r\n";
-  
   tcpsocket.write(request);
-
+  
   std::string response;
   while(not tcpsocket.eof()){
     tcpsocket.read(response);
-    cout << response << endl;
+    cout << response;
   }
 }
 
