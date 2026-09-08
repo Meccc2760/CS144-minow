@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+#include <optional>
 #include "byte_stream.hh"
 
 class Reassembler
@@ -42,5 +44,11 @@ public:
   const Writer& writer() const { return output_.writer(); }
 
 private:
+  // data holder and transportor
   ByteStream output_;
+  std::map<uint64_t, std::string> pending {};
+
+  // state logic
+  uint64_t next_index {0};
+  std::optional<uint64_t> eof_index {std::nullopt};
 };
