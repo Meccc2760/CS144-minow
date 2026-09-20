@@ -5,13 +5,14 @@
 #include "tcp_sender_message.hh"
 
 #include <functional>
+#include <queue>
 
 class TCPSender
 {
 public:
   /* Construct TCP sender with given default Retransmission Timeout and possible ISN */
   TCPSender( ByteStream&& input, Wrap32 isn, uint64_t initial_RTO_ms )
-    : input_( std::move( input ) ), isn_( isn ), initial_RTO_ms_( initial_RTO_ms )
+    : input_( std::move( input ) ), outstanding_buffer_(), isn_( isn ), initial_RTO_ms_( initial_RTO_ms ), curr_RTO_ms_( initial_RTO_ms)
   {}
 
   /* Generate an empty TCPSenderMessage */
@@ -39,7 +40,23 @@ public:
 private:
   Reader& reader() { return input_.reader(); }
 
+  struct OutstandingSegment {
+    TCPSenderMessage msg;
+    uint64_t first_no;
+    uint64_t size;
+  };
   ByteStream input_;
+  std::queue<OutstandingSegment> outstanding_buffer_;
+
   Wrap32 isn_;
+  uint64_t acked_no_ = 0;
+  uint64_t next_seqno_ = 0;
+  uint16_t receiver_available_capa_ = 1;
+
   uint64_t initial_RTO_ms_;
+  uint64_t curr_RTO_ms_;
+  uint64_t RTO_elapsed_ = 0;
+
+  uint64_t consecutive_retransmissions_ = 0;
+  bool fin_sent = false;
 };
