@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <queue>
+#include <map>
 
 // A "network interface" that connects IP (the internet layer, or network layer)
 // with Ethernet (the network access layer, or link layer).
@@ -82,4 +83,14 @@ private:
 
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
+
+  // EthernetAddress-IPAddress mapping buffer, <key, value> = <ip, MAC>
+  std::map<uint32_t, EthernetAddress> address_map_ {};
+  std::map<uint32_t, size_t> ethernet_memory_time_ {};
+
+  // IP datagram queue, waiting for ARP response
+  std::map<uint32_t, std::queue<InternetDatagram>> pending_datagram_ {};
+  std::map<uint32_t, size_t> address_pending_time_ {};
+  // Timer
+  size_t time_ms_ = 0;
 };
